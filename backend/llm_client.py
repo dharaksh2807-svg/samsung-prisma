@@ -38,7 +38,7 @@ class RotationalLLMClient:
                     "https://api.groq.com/openai/v1/chat/completions",
                     headers={"Authorization": f"Bearer {groq_key}"},
                     json={
-                        "model": "llama-3.3-70b-versatile", 
+                        "model": "llama3-8b-8192", 
                         "messages": [{"role": "user", "content": contents}]
                     },
                     timeout=30.0
@@ -48,7 +48,7 @@ class RotationalLLMClient:
                         def __init__(self, t): self.text = t
                     return GroqResponse(res.json()["choices"][0]["message"]["content"])
                 else:
-                    print(f"[RotationalLLMClient] Groq failed with {res.status_code}, falling back to Gemini.")
+                    print(f"[RotationalLLMClient] Groq failed with {res.status_code}: {res.text}, falling back to Gemini.")
 
         # 2. Try Gemini
         if not self.clients:
