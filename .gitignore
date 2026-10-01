@@ -1,0 +1,18 @@
+# Python
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/.venv/
+.venv/
+telemetry.log
+regulastream.db
+
+# Node
+node_modules/
+dist/
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

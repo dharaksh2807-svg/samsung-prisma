@@ -1,0 +1,122 @@
+/* ── RegulaStream Design System ─────────────────────────────────────────── */
+/* Dark-mode premium theme with glassmorphism, smooth gradients, animations  */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Custom Properties ─────────────────────────────────────────────────── */
+:root {
+  /* Brand palette */
+  --brand-primary:   #6c63ff;
+  --brand-secondary: #a78bfa;
+  --brand-glow:      rgba(108, 99, 255, 0.35);
+  --brand-alert:     #f59e0b;
+  --brand-success:   #10b981;
+  --brand-danger:    #ef4444;
+  --brand-info:      #38bdf8;
+
+  /* Surfaces */
+  --bg-root:         #0d0f18;
+  --bg-surface:      #13152a;
+  --bg-elevated:     #1a1d35;
+  --bg-glass:        rgba(26, 29, 53, 0.65);
+  --bg-glass-light:  rgba(255, 255, 255, 0.04);
+  --bg-input:        rgba(13, 15, 24, 0.8);
+
+  /* Borders */
+  --border-subtle:   rgba(255, 255, 255, 0.06);
+  --border-default:  rgba(255, 255, 255, 0.10);
+  --border-brand:    rgba(108, 99, 255, 0.45);
+
+  /* Text */
+  --text-primary:    #f0f1ff;
+  --text-secondary:  #8b8fba;
+  --text-muted:      #555878;
+  --text-code:       #a5f3fc;
+
+  /* Shadows */
+  --shadow-sm:       0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:       0 8px 24px rgba(0,0,0,0.5);
+  --shadow-glow:     0 0 32px var(--brand-glow);
+  --shadow-alert:    0 0 24px rgba(245, 158, 11, 0.3);
+
+  /* Timing */
+  --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color-scheme: dark;
+  color: var(--text-primary);
+  background: var(--bg-root);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Resets ────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100dvh;
+  background: var(--bg-root);
+  /* Subtle radial gradient spotlight */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% 0%, rgba(108,99,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 100%, rgba(167,139,250,0.06) 0%, transparent 60%);
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(108,99,255,0.3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(108,99,255,0.55); }
+
+/* ── Keyframe Animations ───────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);    opacity: 0.8; }
+  70%  { transform: scale(1.6);  opacity: 0;   }
+  100% { transform: scale(1);    opacity: 0;   }
+}
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+@keyframes alert-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(245,158,11,0.6); }
+  50%  { box-shadow: 0 0 0 12px rgba(245,158,11,0); }
+  100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+}
+
+@keyframes slide-bar {
+  from { width: 0%; }
+  to   { width: var(--w, 100%); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
