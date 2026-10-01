@@ -38,7 +38,7 @@ class RotationalLLMClient:
                     "https://api.groq.com/openai/v1/chat/completions",
                     headers={"Authorization": f"Bearer {groq_key}"},
                     json={
-                        "model": "llama3-8b-8192", 
+                        "model": "llama-3.3-70b-versatile", 
                         "messages": [{"role": "user", "content": contents}]
                     },
                     timeout=30.0
