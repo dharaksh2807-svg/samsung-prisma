@@ -65,7 +65,7 @@ function ColourCitations({ text }) {
   const parts = text.split(/(\[[A-Z0-9_§\s.,-]+\])/g)
   return parts.map((part, i) =>
     /^\[.+\]$/.test(part)
-      ? <span key={i} className="citation-tag">{part}</span>
+      ? <span key={i} className="citation-tag" onClick={() => window.open(`http://localhost:8000/api/retriever/doc/${part.replace(/\[|\]/g, '')}`, '_blank')} style={{cursor: 'pointer'}} title="Click to view regulation">{part}</span>
       : <span key={i}>{part}</span>
   )
 }
@@ -379,15 +379,17 @@ export default function App() {
         synthesizer: { status: 'active', latency: null },
       }))
 
-      /* 2. Build evidence chunks from sub-query text (simulated retrieval) */
-      // In production this would query a vector store. We use the sub-query
-      // descriptions themselves as evidence chunks to demonstrate the flow.
-      const chunks = (decompResult.sub_queries || [{ intent: 'main', search_query: queryText }]).map(
-        (sq, i) => ({
-          doc_id: `SUB_${String(i + 1).padStart(3, '0')}`,
-          text: sq.search_query,
-        })
-      )
+      /* 2. Retrieve actual evidence chunks from the backend */
+      let chunks = []
+      try {
+        const searchQueries = (decompResult.sub_queries || []).map(sq => sq.search_query)
+        if (searchQueries.length === 0) searchQueries.push(queryText)
+
+        const retrieveResult = await post('/api/retriever/search', { queries: searchQueries })
+        chunks = retrieveResult.chunks || []
+      } catch (err) {
+        console.error("Retrieval failed:", err)
+      }
       // Carry over cached evidence for refinements
       if (isRefinement && lastEvidenceRef.current.length > 0) {
         const existingIds = new Set(lastEvidenceRef.current.map((e) => e.doc_id))

@@ -19,6 +19,7 @@ from session import (
     SessionState,
     InitSessionRequest
 )
+from retriever import SimpleRetriever, RetrieveRequest, RetrieverOutput
 
 app = FastAPI(title="RegulaStream API", version="1.0.0")
 
@@ -37,6 +38,7 @@ synthesizer = StatefulSynthesizer()
 validator = CitationValidator()
 monitor = RegulatoryStreamMonitor()
 session_manager = SessionManager()
+retriever = SimpleRetriever()
 
 @app.get("/")
 def read_root():
@@ -49,7 +51,7 @@ def read_root():
         "validator_model": validator.model_name,
         "monitor_model": monitor.model_name,
         "session_manager_ready": True,
-        "llm_ready": controller._gemini_client is not None
+        "llm_ready": getattr(controller, "_llm", None) is not None
     }
 
 class EvaluateRequest(BaseModel):
@@ -82,6 +84,27 @@ async def decompose_query(request: DecomposeRequest):
         return output
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/retriever/search", response_model=RetrieverOutput)
+async def search_documents(request: RetrieveRequest):
+    """
+    REST endpoint to search and retrieve relevant regulatory chunks from the file system.
+    """
+    try:
+        output = await retriever.search(request.queries)
+        return output
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+from fastapi.responses import PlainTextResponse
+
+@app.get("/api/retriever/doc/{doc_id}")
+async def get_document_endpoint(doc_id: str):
+    """Serve plain text of a retrieved document so citations can be clicked in the UI."""
+    doc_text = retriever.get_document(doc_id)
+    if doc_text == "Document not found.":
+        raise HTTPException(status_code=404, detail="Document not found")
+    return PlainTextResponse(doc_text)
 
 @app.post("/api/synthesizer/synthesize", response_model=SynthesizerOutput)
 async def synthesize_answer(request: SynthesizerInput):

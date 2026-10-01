@@ -65,17 +65,10 @@ class CitationValidator:
 
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        self.model_name = model_name or os.getenv("VALIDATOR_MODEL", "gemini-2.5-flash")
-        self._gemini_client = None
-        self._init_client()
-
-    def _init_client(self):
-        if self.api_key:
-            try:
-                from google import genai
-                self._gemini_client = genai.Client(api_key=self.api_key)
-            except Exception as e:
-                print(f"[CitationValidator] Warning: Could not initialise google.genai: {e}")
+        self.model_name = model_name or os.getenv("VALIDATOR_MODEL", "gemini-3.8-flash")
+        
+        from llm_client import get_llm_client
+        self._llm = get_llm_client()
 
     def validate_deterministic(self, generated_answer: str, valid_document_ids: List[str]) -> ValidatorOutput:
         """
@@ -113,15 +106,14 @@ class CitationValidator:
         or can invoke Gemini LLM if explicitly requested or for auditing.
         """
         # If LLM requested and available
-        if use_llm and self._gemini_client:
+        if use_llm and self._llm:
             start = time.perf_counter()
             prompt = CITATION_VALIDATOR_PROMPT.format(
                 generated_answer=input_data.generated_answer.replace('"', '\\"'),
                 list_of_valid_ids=json.dumps(input_data.valid_document_ids)
             )
             try:
-                response = await asyncio.to_thread(
-                    self._gemini_client.models.generate_content,
+                response = await self._llm.generate_content(
                     model=self.model_name,
                     contents=prompt,
                 )

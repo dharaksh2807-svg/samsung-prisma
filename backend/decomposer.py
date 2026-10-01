@@ -77,17 +77,12 @@ class MultiIntentDecomposer:
 
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        self.model_name = model_name or os.getenv("DECOMPOSER_MODEL", "gemini-2.5-flash")
-        self._gemini_client = None
-        self._init_client()
+        self.model_name = model_name or os.getenv("DECOMPOSER_MODEL", "gemini-3.8-flash")
+        
+        from llm_client import get_llm_client
+        self._llm = get_llm_client()
 
-    def _init_client(self):
-        if self.api_key:
-            try:
-                from google import genai
-                self._gemini_client = genai.Client(api_key=self.api_key)
-            except Exception as e:
-                print(f"[MultiIntentDecomposer] Warning: Could not initialise google.genai: {e}")
+    # _init_client removed
 
     async def decompose(self, query: str) -> DecomposerOutput:
         """
@@ -104,7 +99,7 @@ class MultiIntentDecomposer:
             )
 
         # 1 — Try Gemini LLM
-        if self._gemini_client:
+        if self._llm:
             try:
                 output = await self._call_gemini(clean_query)
                 output.latency_ms = (time.perf_counter() - start) * 1000
@@ -120,8 +115,7 @@ class MultiIntentDecomposer:
     async def _call_gemini(self, query: str) -> DecomposerOutput:
         prompt = f"{MULTI_INTENT_DECOMPOSER_PROMPT}\n\nInput: \"{query}\"\nOutput:"
 
-        response = await asyncio.to_thread(
-            self._gemini_client.models.generate_content,
+        response = await self._llm.generate_content(
             model=self.model_name,
             contents=prompt,
         )

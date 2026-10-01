@@ -59,9 +59,10 @@ class RetrievalController:
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         self.openai_key = os.getenv("OPENAI_API_KEY")
-        self.model_name = model_name or os.getenv("CONTROLLER_MODEL", "gemini-2.5-flash")
-        self._gemini_client = None
-        self._init_client()
+        self.model_name = model_name or os.getenv("CONTROLLER_MODEL", "gemini-3.8-flash")
+        
+        from llm_client import get_llm_client
+        self._llm = get_llm_client()
 
     def _init_client(self):
         if self.api_key:
@@ -86,7 +87,7 @@ class RetrievalController:
             )
 
         # 1. Try Gemini LLM if key is configured
-        if self._gemini_client:
+        if self._llm:
             try:
                 output = await self._call_gemini(clean_text, previous_context)
                 output.latency_ms = (time.perf_counter() - start_time) * 1000
@@ -103,10 +104,7 @@ class RetrievalController:
         context_block = f"\nPrevious Answer Context: {previous_context}\n" if previous_context else ""
         prompt = f"{RETRIEVAL_CONTROLLER_SYSTEM_PROMPT}\n{context_block}\nInput: \"{transcript}\"\nOutput:"
         
-        # Non-blocking async execution
-        import asyncio
-        response = await asyncio.to_thread(
-            self._gemini_client.models.generate_content,
+        response = await self._llm.generate_content(
             model=self.model_name,
             contents=prompt,
         )

@@ -14,7 +14,7 @@ async def run_demonstration():
     print("=" * 70)
 
     controller = RetrievalController()
-    llm_status = "Gemini LLM Active" if controller._gemini_client else "Heuristic / Rule Engine (Sub-ms Latency)"
+    llm_status = "Gemini LLM Active" if getattr(controller, "_llm", None) else "Heuristic / Rule Engine (Sub-ms Latency)"
     print(f"Model Configuration : {controller.model_name}")
     print(f"Engine Mode         : {llm_status}")
     print("-" * 70)

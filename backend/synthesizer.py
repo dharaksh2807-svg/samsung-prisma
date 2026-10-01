@@ -61,18 +61,13 @@ class StatefulSynthesizer:
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         # For synthesis, a more capable model like gemini-1.5-pro or Sonnet 3.5 is ideal,
-        # but we use gemini-2.5-flash as default for speed unless overridden.
-        self.model_name = model_name or os.getenv("SYNTHESIZER_MODEL", "gemini-2.5-flash")
-        self._gemini_client = None
-        self._init_client()
+        # but we use gemini-3.8-flash as default for speed unless overridden.
+        self.model_name = model_name or os.getenv("SYNTHESIZER_MODEL", "gemini-3.8-flash")
+        
+        from llm_client import get_llm_client
+        self._llm = get_llm_client()
 
-    def _init_client(self):
-        if self.api_key:
-            try:
-                from google import genai
-                self._gemini_client = genai.Client(api_key=self.api_key)
-            except Exception as e:
-                print(f"[StatefulSynthesizer] Warning: Could not initialise google.genai: {e}")
+    # _init_client removed
 
     async def synthesize(self, input_data: SynthesizerInput) -> SynthesizerOutput:
         start = time.perf_counter()
@@ -98,10 +93,9 @@ class StatefulSynthesizer:
         )
 
         # 1 — Try Gemini LLM
-        if self._gemini_client:
+        if self._llm:
             try:
-                response = await asyncio.to_thread(
-                    self._gemini_client.models.generate_content,
+                response = await self._llm.generate_content(
                     model=self.model_name,
                     contents=prompt,
                 )
@@ -121,15 +115,14 @@ class StatefulSynthesizer:
         )
 
     def _mock_synthesize(self, input_data: SynthesizerInput) -> str:
-        """Deterministic fallback for testing without API keys."""
+        """Deterministic fallback when API keys are exhausted."""
         if not input_data.retrieved_chunks:
             return "Insufficient evidence in the current regulatory corpus."
             
-        doc_ids = [c.get("doc_id", "UNKNOWN") for c in input_data.retrieved_chunks]
-        cites = " ".join([f"[{d}]" for d in doc_ids])
-        
-        # Simple string matching to satisfy rules in testing
-        if "conflict" in input_data.current_query.lower() or any("conflict" in c.get("text", "").lower() for c in input_data.retrieved_chunks):
-            return f"The evidence contradicts itself. One source says X [{doc_ids[0]}] while another says Y [{doc_ids[-1]}]."
+        answer = "**[SYSTEM FALLBACK: All LLM API keys exhausted (Rate limit exceeded)]**\n\nSince the LLM cannot be reached, here are the exact excerpts from the retrieved regulations:\n\n"
+        for chunk in input_data.retrieved_chunks:
+            doc_id = chunk.get("doc_id", "UNKNOWN")
+            text = chunk.get("text", "")
+            answer += f"**[{doc_id}]**\n> {text}\n\n"
             
-        return f"Based on the regulatory chunks, here is the answer {cites}."
+        return answer.strip()
