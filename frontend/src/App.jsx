@@ -29,8 +29,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import './App.css'
 
 /* ── Constants ──────────────────────────────────────────────────────────── */
-const API = 'http://localhost:8000'
-const WS_URL = 'ws://localhost:8000/ws/stream'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws/stream'
 
 const STAGE_ORDER = ['controller', 'decomposer', 'synthesizer', 'validator']
 const STAGE_LABELS = {
