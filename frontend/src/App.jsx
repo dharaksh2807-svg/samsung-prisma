@@ -302,6 +302,11 @@ export default function App() {
   const wsRef = useRef(null)
   const debounceRef = useRef(null)
   const eventIdRef = useRef(0)
+  
+  const queryRef = useRef('')
+  const answerRef = useRef('')
+  useEffect(() => { queryRef.current = query }, [query])
+  useEffect(() => { answerRef.current = answer }, [answer])
 
   /* ── WebSocket: live controller feedback while typing ─────────────────── */
   useEffect(() => {
@@ -319,13 +324,36 @@ export default function App() {
       ws.onmessage = (e) => {
         try {
           const data = JSON.parse(e.data)
-          setControllerDecision(data.decision)
-          setControllerConfidence(data.confidence)
-          setControllerLatency(data.latency_ms)
-          setStages((prev) => ({
-            ...prev,
-            controller: { status: 'done', latency: data.latency_ms },
-          }))
+          if (data.event === 'KNOWLEDGE_UPDATE') {
+            const q = queryRef.current
+            const a = answerRef.current
+            if (q && a) {
+              post('/api/monitor/evaluate', {
+                previous_query: q,
+                previous_answer: a,
+                new_doc_id: data.doc_id,
+                new_document_text: data.content || ""
+              }).then(result => {
+                const id = ++eventIdRef.current
+                setStreamEvents((prev) => [
+                  { id, doc_id: data.doc_id, ...result },
+                  ...prev.slice(0, 19),
+                ])
+                if (result.update_required) setIsAnswerStale(true)
+              }).catch(console.error)
+            }
+            return
+          }
+          
+          if (data.event === 'CONTROLLER_DECISION') {
+            setControllerDecision(data.decision)
+            setControllerConfidence(data.confidence)
+            setControllerLatency(data.latency_ms)
+            setStages((prev) => ({
+              ...prev,
+              controller: { status: 'done', latency: data.latency_ms },
+            }))
+          }
         } catch {}
       }
     }
@@ -497,22 +525,11 @@ export default function App() {
   /* ── Monitor Injection ──────────────────────────────────────────────── */
   async function handleMonitorInject(docId, docText) {
     if (!answer) return
-    const result = await post('/api/monitor/evaluate', {
-      previous_query:   query,
-      previous_answer:  answer,
-      new_doc_id:       docId,
-      new_document_text: docText,
+    // Stage 5: Inject via Admin API. The WebSocket will broadcast the update!
+    await post('/api/admin/inject_doc', {
+      doc_id: docId,
+      content: docText
     })
-
-    const id = ++eventIdRef.current
-    setStreamEvents((prev) => [
-      { id, doc_id: docId, ...result },
-      ...prev.slice(0, 19),
-    ])
-
-    if (result.update_required) {
-      setIsAnswerStale(true)
-    }
   }
 
   /* ── Confidence bar ─────────────────────────────────────────────────── */

@@ -40,6 +40,27 @@ monitor = RegulatoryStreamMonitor()
 session_manager = SessionManager()
 retriever = SimpleRetriever()
 
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: dict):
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception:
+                pass
+
+manager = ConnectionManager()
+
 @app.get("/")
 def read_root():
     return {
@@ -57,6 +78,10 @@ def read_root():
 class EvaluateRequest(BaseModel):
     transcript: str
     previous_context: Optional[str] = None
+
+class InjectRequest(BaseModel):
+    doc_id: str
+    content: str
 
 class DecomposeRequest(BaseModel):
     query: str
@@ -293,4 +318,33 @@ def get_session_state(session_id: str):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
+
+@app.post("/api/admin/inject_doc")
+async def inject_document(req: InjectRequest):
+    """
+    Simulates a live knowledge injection (Stage 5).
+    Saves doc to disk, reloads retriever, and broadcasts a WS event.
+    """
+    try:
+        import os
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(current_dir, "data", "regulations", f"{req.doc_id}.md")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(req.content)
+            
+        # Re-load retriever so new documents are available
+        retriever.load_documents()
+        
+        # Broadcast that a new document arrived!
+        await manager.broadcast({
+            "event": "KNOWLEDGE_UPDATE",
+            "doc_id": req.doc_id,
+            "content": req.content,
+            "timestamp": time.time()
+        })
+        
+        return {"status": "success", "doc_id": req.doc_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
