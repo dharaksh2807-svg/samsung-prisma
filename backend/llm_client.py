@@ -33,22 +33,29 @@ class RotationalLLMClient:
         groq_key = os.getenv("GROQ_API_KEY")
         if groq_key:
             import httpx
-            async with httpx.AsyncClient() as client:
-                res = await client.post(
-                    "https://api.groq.com/openai/v1/chat/completions",
-                    headers={"Authorization": f"Bearer {groq_key}"},
-                    json={
-                        "model": "openai/gpt-oss-120b", 
-                        "messages": [{"role": "user", "content": contents}]
-                    },
-                    timeout=30.0
-                )
-                if res.status_code == 200:
-                    class GroqResponse:
-                        def __init__(self, t): self.text = t
-                    return GroqResponse(res.json()["choices"][0]["message"]["content"])
-                else:
-                    print(f"[RotationalLLMClient] Groq failed with {res.status_code}: {res.text}, falling back to Gemini.")
+            import asyncio
+            for retry_attempt in range(5):
+                async with httpx.AsyncClient() as client:
+                    res = await client.post(
+                        "https://api.groq.com/openai/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {groq_key}"},
+                        json={
+                            "model": "openai/gpt-oss-120b", 
+                            "messages": [{"role": "user", "content": contents}]
+                        },
+                        timeout=30.0
+                    )
+                    if res.status_code == 200:
+                        class GroqResponse:
+                            def __init__(self, t): self.text = t
+                        return GroqResponse(res.json()["choices"][0]["message"]["content"])
+                    elif res.status_code == 429:
+                        print(f"[RotationalLLMClient] Groq 429 Rate Limit on attempt {retry_attempt+1}. Waiting 1.5s...")
+                        await asyncio.sleep(1.5)
+                        continue
+                    else:
+                        print(f"[RotationalLLMClient] Groq failed with {res.status_code}: {res.text}, falling back to Gemini.")
+                        break
 
         # 2. Try Gemini
         if not self.clients:
