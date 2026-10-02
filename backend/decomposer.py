@@ -171,18 +171,29 @@ class MultiIntentDecomposer:
                     seen_intents.add(intent_label)
                     break  # move to next concept once matched
 
-        # Fallback: treat whole query as single intent
+        # Fallback: Dynamic NLP splitting on conjunctions if no static keywords match
         if not matched:
-            # Clean conversational filler words
-            clean = re.sub(
-                r"\b(please|can you|could you|tell me|what is|what are|explain|describe|how does|i want to know|i need)\b",
-                "", text_lower
-            )
-            clean = re.sub(r"\s+", " ", clean).strip()
-            matched.append(SubQuery(
-                intent="general_regulatory_query",
-                search_query=clean if clean else query
-            ))
+            # Split by common compound sentence conjunctions
+            clauses = re.split(r'\b(and|or|also|as well as|along with)\b', text_lower)
+            # Filter out the split words themselves and empty strings
+            clauses = [c.strip() for c in clauses if c.strip() and c.strip() not in {"and", "or", "also", "as well as", "along with"}]
+            
+            for clause in clauses:
+                # Clean conversational filler words
+                clean = re.sub(
+                    r"\b(please|can you|could you|tell me|what is|what are|explain|describe|how does|i want to know|i need)\b",
+                    "", clause
+                )
+                clean = re.sub(r"\s+", " ", clean).strip()
+                if clean:
+                    matched.append(SubQuery(
+                        intent="dynamic_extracted_intent",
+                        search_query=clean
+                    ))
+            
+            # Absolute fallback if cleaning wiped everything
+            if not matched:
+                matched.append(SubQuery(intent="general_query", search_query=query))
 
         # Mitigate Pitfall 5: Over-Fragmenting Sub-Queries. Cap to max 3 queries.
         return DecomposerOutput(sub_queries=matched[:3])
