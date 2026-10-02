@@ -233,7 +233,29 @@ class SessionManager:
         self._sessions: Dict[str, SessionState] = {}
         self.delta_generator = delta_generator or DeltaQueryGenerator()
 
+    def check_semantic_cache(self, session_id: str, query: str, threshold: float = 0.90) -> Optional[str]:
+        session = self.get_session(session_id)
+        if not session or not session.history:
+            return None
+        import re
+        from difflib import SequenceMatcher
+        q_clean = re.sub(r"[^a-zA-Z0-9s]", "", query.lower()).strip()
+        for entry in reversed(session.history):
+            e_clean = re.sub(r"[^a-zA-Z0-9s]", "", entry.query.lower()).strip()
+            if not q_clean or not e_clean: continue
+            if SequenceMatcher(None, q_clean, e_clean).ratio() >= threshold:
+                return entry.answer
+        return None
+
+
     def get_or_create_session(self, session_id: Optional[str] = None) -> SessionState:
+        # Prevent memory leak by capping max active sessions
+        if len(self._sessions) > 1000:
+            # Evict oldest 100 sessions
+            sorted_sessions = sorted(self._sessions.items(), key=lambda x: x[1].updated_at)
+            for k, _ in sorted_sessions[:100]:
+                del self._sessions[k]
+                
         sid = session_id or str(uuid.uuid4())
         if sid not in self._sessions:
             self._sessions[sid] = SessionState(session_id=sid)

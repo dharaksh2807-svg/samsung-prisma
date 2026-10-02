@@ -61,7 +61,7 @@ class CitationValidator:
     Provides ultra-fast regex parsing (<2ms) and Gemini LLM auditing.
     """
 
-    CITATION_PATTERN = re.compile(r"\[([A-Za-z0-9_\-]+)\]")
+    CITATION_PATTERN = re.compile(r"\[([A-Za-z0-9_\-\.\s§]+)\]")
 
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")

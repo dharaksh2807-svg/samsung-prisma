@@ -39,9 +39,9 @@ Previous Queries: {session_history}
 </RETRIEVED_EVIDENCE>
 
 <RULES>
-1. EVERY factual claim you make MUST be followed by the exact Document ID in brackets, e.g., "Existing customers need reverification [REG_014_SEC_4]."
+1. EVERY factual claim you make MUST be followed by the exact Document ID and Section in brackets, e.g., "Existing customers need reverification [REG_014 §4]".
 2. If the evidence contradicts itself, state the conflict and cite both sources.
-3. If the evidence does not contain the answer, reply ONLY with: "Insufficient evidence in the current regulatory corpus."
+3. If the evidence does not contain the answer, reply ONLY with: "⚠️ **UNCERTAINTY WARNING:** Insufficient evidence in the current regulatory corpus to verify this claim."
 4. Incorporate late constraints (from Session Context) to refine your answer.
 </RULES>
 

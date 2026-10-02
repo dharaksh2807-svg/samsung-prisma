@@ -184,7 +184,8 @@ class MultiIntentDecomposer:
                 search_query=clean if clean else query
             ))
 
-        return DecomposerOutput(sub_queries=matched)
+        # Mitigate Pitfall 5: Over-Fragmenting Sub-Queries. Cap to max 3 queries.
+        return DecomposerOutput(sub_queries=matched[:3])
 
     def _build_search_query(self, trigger: str, full_text: str) -> str:
         """

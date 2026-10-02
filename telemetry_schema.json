@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RegulaStream Telemetry & Observability Schema",
+  "description": "Schema for structured logs capturing end-to-end latencies, retrieval triggers, answer version lineage, and inference cost estimations (Gate G6).",
+  "type": "object",
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_runs": {
+      "type": "integer"
+    },
+    "success_rate_pct": {
+      "type": "number"
+    },
+    "avg_latency_ms": {
+      "type": "number"
+    },
+    "p95_latency_ms": {
+      "type": "number"
+    },
+    "inference_cost_estimations": {
+      "type": "object",
+      "properties": {
+        "total_tokens_approx": {
+          "type": "integer",
+          "description": "Estimated total LLM token usage across all parallel calls"
+        },
+        "estimated_cost_usd": {
+          "type": "number",
+          "description": "Estimated monetary cost based on provider token pricing"
+        }
+      },
+      "required": ["total_tokens_approx", "estimated_cost_usd"]
+    },
+    "trace_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "scenario_id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string",
+            "enum": ["controller", "decomposer", "retriever", "synthesizer", "validator", "monitor", "session"]
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "latency_ms": {
+            "type": "number",
+            "description": "End-to-end request latency for this micro-stage."
+          },
+          "response_snapshot": {
+            "type": "object",
+            "description": "Includes answer version updates, decision confidence, and retrieval triggers."
+          }
+        },
+        "required": ["scenario_id", "stage", "latency_ms"]
+      }
+    }
+  },
+  "required": [
+    "generated_at",
+    "avg_latency_ms",
+    "inference_cost_estimations",
+    "trace_events"
+  ]
+}

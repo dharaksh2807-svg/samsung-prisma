@@ -281,6 +281,7 @@ class BenchmarkReport:
     g1_passed: bool
     g6_passed: bool
     all_gates_passed: bool
+    inference_cost_estimations: Dict[str, float] = field(default_factory=dict)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -640,6 +641,10 @@ def _build_report(
         g1_passed=g1.passed,
         g6_passed=g6.passed,
         all_gates_passed=g1.passed and g6.passed,
+        inference_cost_estimations={
+            "total_tokens_approx": sum(len(str(ev.response_snapshot)) // 4 for ev in trace_events),
+            "estimated_cost_usd": sum(len(str(ev.response_snapshot)) // 4 for ev in trace_events) * 0.0000001
+        }
     )
 
 

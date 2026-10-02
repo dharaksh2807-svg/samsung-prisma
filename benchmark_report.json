@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T23:13:39Z",
+  "generated_at": "2026-10-01T23:46:03Z",
   "base_url": "http://localhost:8000",
   "concurrency": 3,
   "total_scenarios": 10,
@@ -8,15 +8,15 @@
   "failed_runs": 0,
   "server_reachable": true,
   "success_rate_pct": 100.0,
-  "avg_latency_ms": 576.78,
-  "p95_latency_ms": 1043.46,
+  "avg_latency_ms": 15.3,
+  "p95_latency_ms": 41.86,
   "stage_avg_latency_ms": {
-    "controller": 506.88,
-    "decomposer": 954.16,
-    "synthesizer": 990.34,
-    "validator": 1.31,
-    "monitor": 850.18,
-    "session": 599.68
+    "controller": 27.53,
+    "decomposer": 12.75,
+    "synthesizer": 15.9,
+    "validator": 1.37,
+    "monitor": 14.84,
+    "session": 9.34
   },
   "gate_results": [
     {
@@ -36,12 +36,12 @@
       "passed": true,
       "detail": "All pipeline stages have at least one passing trace with latency measurement.",
       "evidence": [
-        "\u2713 controller: 6 trace(s), avg 506.9ms",
-        "\u2713 session: 2 trace(s), avg 599.7ms",
-        "\u2713 synthesizer: 2 trace(s), avg 990.3ms",
-        "\u2713 decomposer: 2 trace(s), avg 954.2ms",
-        "\u2713 validator: 4 trace(s), avg 1.3ms",
-        "\u2713 monitor: 4 trace(s), avg 850.2ms"
+        "\u2713 validator: 4 trace(s), avg 1.4ms",
+        "\u2713 synthesizer: 2 trace(s), avg 15.9ms",
+        "\u2713 controller: 6 trace(s), avg 27.5ms",
+        "\u2713 monitor: 4 trace(s), avg 14.8ms",
+        "\u2713 session: 2 trace(s), avg 9.3ms",
+        "\u2713 decomposer: 2 trace(s), avg 12.7ms"
       ]
     }
   ],
@@ -52,14 +52,14 @@
       "endpoint": "/api/controller/evaluate",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 445.7058331463486,
-      "server_latency_ms": 444.2153749987483,
+      "latency_ms": 42.483084136620164,
+      "server_latency_ms": 40.03399983048439,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "decision": "RETRIEVE",
-        "confidence": 0.98,
-        "latency_ms": 444.2153749987483
+        "confidence": 0.95,
+        "latency_ms": 40.03399983048439
       }
     },
     {
@@ -68,14 +68,14 @@
       "endpoint": "/api/controller/evaluate",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 444.69641614705324,
-      "server_latency_ms": 434.1053750831634,
+      "latency_ms": 41.457540821284056,
+      "server_latency_ms": 35.64875014126301,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "decision": "WAIT",
         "confidence": 0.92,
-        "latency_ms": 434.1053750831634
+        "latency_ms": 35.64875014126301
       }
     },
     {
@@ -84,14 +84,14 @@
       "endpoint": "/api/controller/evaluate",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 1008.7025831453502,
-      "server_latency_ms": 995.8325419574976,
+      "latency_ms": 41.85516689904034,
+      "server_latency_ms": 37.49108291231096,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "decision": "NO-RETRIEVAL",
-        "confidence": 0.99,
-        "latency_ms": 995.8325419574976
+        "confidence": 0.96,
+        "latency_ms": 37.49108291231096
       }
     },
     {
@@ -100,13 +100,13 @@
       "endpoint": "/api/decomposer/decompose",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 927.1845000330359,
-      "server_latency_ms": 925.2865421585739,
+      "latency_ms": 13.52566690184176,
+      "server_latency_ms": 12.424707878381014,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
-        "latency_ms": 925.2865421585739,
-        "sub_query_count": 2
+        "latency_ms": 12.424707878381014,
+        "sub_query_count": 5
       }
     },
     {
@@ -115,13 +115,13 @@
       "endpoint": "/api/synthesizer/synthesize",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 1043.4623749461025,
-      "server_latency_ms": 1037.221792154014,
+      "latency_ms": 15.571374911814928,
+      "server_latency_ms": 13.286791974678636,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
-        "latency_ms": 1037.221792154014,
-        "answer_preview": "**KYC Reverification Requirements**\n\n- All existing customers must complete KYC reverification by **March\u202f2027**\u3010REG_KYC"
+        "latency_ms": 13.286791974678636,
+        "answer_preview": "**[SYSTEM FALLBACK: All LLM API keys exhausted (Rate limit exceeded)]**\n\nSince the LLM cannot be reached, here are the e"
       }
     },
     {
@@ -130,14 +130,14 @@
       "endpoint": "/api/validator/validate",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 1.6643328126519918,
-      "server_latency_ms": 0.006791902706027031,
+      "latency_ms": 3.4430420491844416,
+      "server_latency_ms": 0.0036249402910470963,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "is_valid": true,
         "fabricated_ids_found": [],
-        "latency_ms": 0.006791902706027031
+        "latency_ms": 0.0036249402910470963
       }
     },
     {
@@ -146,8 +146,8 @@
       "endpoint": "/api/validator/validate",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 0.9374590590596199,
-      "server_latency_ms": 0.10324991308152676,
+      "latency_ms": 0.803499948233366,
+      "server_latency_ms": 0.06662518717348576,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
@@ -155,7 +155,7 @@
         "fabricated_ids_found": [
           "FABRICATED_999"
         ],
-        "latency_ms": 0.10324991308152676
+        "latency_ms": 0.06662518717348576
       }
     },
     {
@@ -164,13 +164,13 @@
       "endpoint": "/api/monitor/evaluate",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 696.6832499019802,
-      "server_latency_ms": 695.2482501510531,
+      "latency_ms": 12.774291913956404,
+      "server_latency_ms": 0.12612505815923214,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "update_required": true,
-        "latency_ms": 695.2482501510531
+        "latency_ms": 0.12612505815923214
       }
     },
     {
@@ -179,13 +179,13 @@
       "endpoint": "/api/monitor/evaluate",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 815.1464171241969,
-      "server_latency_ms": 813.3737498428673,
+      "latency_ms": 14.140707906335592,
+      "server_latency_ms": 0.01945788972079754,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "update_required": false,
-        "latency_ms": 813.3737498428673
+        "latency_ms": 0.01945788972079754
       }
     },
     {
@@ -194,15 +194,15 @@
       "endpoint": "/api/session/delta_query",
       "run_index": 0,
       "http_status": 200,
-      "latency_ms": 717.1057078521699,
-      "server_latency_ms": 716.081874910742,
+      "latency_ms": 11.654957896098495,
+      "server_latency_ms": 10.486916871741414,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "is_refinement": true,
-        "search_query": "KYC reverification requirements digital lending customers",
+        "search_query": "kyc reverification only for digital lending customers",
         "answer_version": 1,
-        "latency_ms": 716.081874910742
+        "latency_ms": 10.486916871741414
       }
     },
     {
@@ -211,14 +211,14 @@
       "endpoint": "/api/controller/evaluate",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 396.47450018674135,
-      "server_latency_ms": 394.657792057842,
+      "latency_ms": 12.961291940882802,
+      "server_latency_ms": 11.045207967981696,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "decision": "RETRIEVE",
-        "confidence": 0.97,
-        "latency_ms": 394.657792057842
+        "confidence": 0.95,
+        "latency_ms": 11.045207967981696
       }
     },
     {
@@ -227,14 +227,14 @@
       "endpoint": "/api/controller/evaluate",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 362.6017088536173,
-      "server_latency_ms": 360.58245901949704,
+      "latency_ms": 12.419334147125483,
+      "server_latency_ms": 10.830667102709413,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "decision": "WAIT",
-        "confidence": 0.93,
-        "latency_ms": 360.58245901949704
+        "confidence": 0.92,
+        "latency_ms": 10.830667102709413
       }
     },
     {
@@ -243,14 +243,14 @@
       "endpoint": "/api/controller/evaluate",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 383.09208396822214,
-      "server_latency_ms": 381.10545813106,
+      "latency_ms": 14.007791876792908,
+      "server_latency_ms": 11.816457845270634,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "decision": "NO-RETRIEVAL",
-        "confidence": 0.99,
-        "latency_ms": 381.10545813106
+        "confidence": 0.96,
+        "latency_ms": 11.816457845270634
       }
     },
     {
@@ -259,13 +259,13 @@
       "endpoint": "/api/decomposer/decompose",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 981.1433339491487,
-      "server_latency_ms": 979.6733749099076,
+      "latency_ms": 11.967499973252416,
+      "server_latency_ms": 10.21808315999806,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
-        "latency_ms": 979.6733749099076,
-        "sub_query_count": 2
+        "latency_ms": 10.21808315999806,
+        "sub_query_count": 5
       }
     },
     {
@@ -274,13 +274,13 @@
       "endpoint": "/api/synthesizer/synthesize",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 937.2095421422273,
-      "server_latency_ms": 935.3709169663489,
+      "latency_ms": 16.22620807029307,
+      "server_latency_ms": 15.252124983817339,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
-        "latency_ms": 935.3709169663489,
-        "answer_preview": "- All existing customers must complete KYC reverification by **March\u202f2027**\u3010REG_KYC_2026_01\u3011.  \n- For digital\u2011lending se"
+        "latency_ms": 15.252124983817339,
+        "answer_preview": "**[SYSTEM FALLBACK: All LLM API keys exhausted (Rate limit exceeded)]**\n\nSince the LLM cannot be reached, here are the e"
       }
     },
     {
@@ -289,14 +289,14 @@
       "endpoint": "/api/validator/validate",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 1.5762918628752232,
-      "server_latency_ms": 0.004416098818182945,
+      "latency_ms": 0.5542500875890255,
+      "server_latency_ms": 0.002416083589196205,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "is_valid": true,
         "fabricated_ids_found": [],
-        "latency_ms": 0.004416098818182945
+        "latency_ms": 0.002416083589196205
       }
     },
     {
@@ -305,8 +305,8 @@
       "endpoint": "/api/validator/validate",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 1.0557500645518303,
-      "server_latency_ms": 0.021167099475860596,
+      "latency_ms": 0.6812498904764652,
+      "server_latency_ms": 0.008249888196587563,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
@@ -314,7 +314,7 @@
         "fabricated_ids_found": [
           "FABRICATED_999"
         ],
-        "latency_ms": 0.021167099475860596
+        "latency_ms": 0.008249888196587563
       }
     },
     {
@@ -323,13 +323,13 @@
       "endpoint": "/api/monitor/evaluate",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 1104.794334154576,
-      "server_latency_ms": 1103.0785001348704,
+      "latency_ms": 16.555042006075382,
+      "server_latency_ms": 0.05587516352534294,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "update_required": true,
-        "latency_ms": 1103.0785001348704
+        "latency_ms": 0.05587516352534294
       }
     },
     {
@@ -338,13 +338,13 @@
       "endpoint": "/api/monitor/evaluate",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 784.1152921319008,
-      "server_latency_ms": 782.1589589584619,
+      "latency_ms": 15.896083088591695,
+      "server_latency_ms": 0.017250189557671547,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "update_required": false,
-        "latency_ms": 782.1589589584619
+        "latency_ms": 0.017250189557671547
       }
     },
     {
@@ -353,15 +353,15 @@
       "endpoint": "/api/session/delta_query",
       "run_index": 1,
       "http_status": 200,
-      "latency_ms": 482.25904209539294,
-      "server_latency_ms": 481.25137481838465,
+      "latency_ms": 7.02174985781312,
+      "server_latency_ms": 5.98441599868238,
       "passed": true,
       "failure_reason": null,
       "response_snapshot": {
         "is_refinement": true,
-        "search_query": "KYC reverification requirements digital lending customers",
+        "search_query": "kyc reverification only for digital lending customers",
         "answer_version": 1,
-        "latency_ms": 481.25137481838465
+        "latency_ms": 5.98441599868238
       }
     }
   ],
