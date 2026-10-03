@@ -1,4 +1,4 @@
-# RegulaStream: Streaming Live RAG 
+# RegulaStream: Streaming Live RAG (Failed Project)
 **Theme 4 Hackathon Submission (Samsung PRISM)**
 
 ## 1. Executive Summary
